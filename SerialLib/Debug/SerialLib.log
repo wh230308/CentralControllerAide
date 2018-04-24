@@ -1,0 +1,18 @@
+﻿Build started 2018/4/24 21:28:22.
+     1>Project "D:\WORKKING_DIR\CentralControllerAide\SerialLib\SerialLib.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _USING_V110_SDK71_ /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Serial.cpp SerialEx.cpp SerialWnd.cpp
+         SerialWnd.cpp
+         SerialEx.cpp
+         Serial.cpp
+         Generating Code...
+       Lib:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\Lib.exe /OUT:"D:\WORKKING_DIR\CentralControllerAide\Debug\SerialLib_d.lib" /NOLOGO Debug\Serial.obj
+         Debug\SerialEx.obj
+         Debug\SerialWnd.obj
+         SerialLib.vcxproj -> D:\WORKKING_DIR\CentralControllerAide\Debug\SerialLib_d.lib
+     1>Done Building Project "D:\WORKKING_DIR\CentralControllerAide\SerialLib\SerialLib.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.96
