@@ -76,6 +76,8 @@ BEGIN_MESSAGE_MAP(CDlgProjectorConfig, CDialogEx)
 	ON_LBN_SELCHANGE(IDC_LIST_PROJECTOR_BRAND, &CDlgProjectorConfig::OnSelchangeListProjectorBrand)
 	ON_LBN_SELCHANGE(IDC_LIST_PROJECTOR_MODEL, &CDlgProjectorConfig::OnSelchangeListProjectorModel)
     ON_BN_CLICKED(IDC_CHECK_HEXINTEGER_SWITCH, &CDlgProjectorConfig::OnClickedCheckHexintegerSwitch)
+	ON_COMMAND(IDC_RADIO_CODE1, &CDlgProjectorConfig::OnRadioCode1Selected)
+	ON_COMMAND(IDC_RADIO_CODE2, &CDlgProjectorConfig::OnRadioCode2Selected)
 END_MESSAGE_MAP()
 
 
@@ -260,6 +262,21 @@ void CDlgProjectorConfig::SetProjectorOpcodeCtrlPos()
     groupRect.bottom = groupRect.top + 315;
     GetDlgItem(IDC_STATIC_PROJECTOR_OPCODE)->MoveWindow(&groupRect);
 
+	CRect textRadioCode1Rect(groupRect);
+	textRadioCode1Rect.left = groupRect.right - 253;
+	textRadioCode1Rect.top += 20;
+	textRadioCode1Rect.right = groupRect.right - 193;
+	textRadioCode1Rect.bottom = textRadioCode1Rect.top + 15;
+	GetDlgItem(IDC_RADIO_CODE1)->MoveWindow(&textRadioCode1Rect);
+	((CButton*)GetDlgItem(IDC_RADIO_CODE1))->SetCheck(BST_CHECKED);
+
+	CRect textRadioCode2Rect(groupRect);
+	textRadioCode2Rect.left = groupRect.right - 183;
+	textRadioCode2Rect.top += 20;
+	textRadioCode2Rect.right = groupRect.right - 123;
+	textRadioCode2Rect.bottom = textRadioCode2Rect.top + 15;
+	GetDlgItem(IDC_RADIO_CODE2)->MoveWindow(&textRadioCode2Rect);
+
     CRect textHexSwitchRect(groupRect);
     textHexSwitchRect.left = groupRect.right - 93;
     textHexSwitchRect.top += 20;
@@ -267,7 +284,7 @@ void CDlgProjectorConfig::SetProjectorOpcodeCtrlPos()
     textHexSwitchRect.bottom = textHexSwitchRect.top + 15;
     GetDlgItem(IDC_CHECK_HEXINTEGER_SWITCH)->MoveWindow(&textHexSwitchRect);
     ((CButton*)GetDlgItem(IDC_CHECK_HEXINTEGER_SWITCH))->SetCheck(BST_CHECKED);
-
+	   
     CRect textPowerOnRect(groupRect);
     textPowerOnRect.left += 10;
     textPowerOnRect.top += 30;
@@ -753,7 +770,7 @@ void CDlgProjectorConfig::OnClickedBtnGetSerialConfig()
 
 	BYTE byRequest[BUFFER_SIZE] = { 0 };
 	ULONG uSize = 0;
-	BuildSerialData(FUNCTION_RSERIAL, NULL, 0, byRequest, uSize);
+	BuildSerialData(1, FUNCTION_RSERIAL, NULL, 0, byRequest, uSize);
 	m_pMainDlg->SendSerialData(byRequest, uSize);
 }
 
@@ -861,20 +878,20 @@ void CDlgProjectorConfig::OnClickedBtnSetSerialConfig()
 	byInput[uLength++] = GetDataBitCode(strDataBit);
 	byInput[uLength++] = GetParityBitsCode(strParityBits);
 	byInput[uLength++] = GetStopBitCode(strStopBit);
-	BuildSerialData(FUNCTION_WSERIAL, byInput, uLength, byRequest, uSize);
+	BuildSerialData(1, FUNCTION_WSERIAL, byInput, uLength, byRequest, uSize);
     if (m_pMainDlg->SendSerialData(byRequest, uSize)) {
         MessageBox(_T("设置串口参数成功！"), _T("提示"), MB_ICONINFORMATION);
     }
 }
 
-BOOL CDlgProjectorConfig::GetProjectorOpcode()
+BOOL CDlgProjectorConfig::GetProjectorOpcode(BYTE byIndex)
 {
 	BOOL bResult = TRUE;
 	BYTE functions[] = { FUNCTION_RON, FUNCTION_ROFF, FUNCTION_RRGB, FUNCTION_RVIDEO, FUNCTION_RDELAY };
 	for (const auto item : functions) {
 		BYTE byRequest[100] = { 0 };
 		ULONG uSize = 0;
-		BuildSerialData(item, NULL, 0, byRequest, uSize);
+		BuildSerialData(byIndex, item, NULL, 0, byRequest, uSize);
 		bResult = m_pMainDlg->SendSerialData(byRequest, uSize);
         Sleep(100);
 
@@ -895,7 +912,15 @@ BOOL CDlgProjectorConfig::GetProjectorOpcode()
 unsigned int WINAPI GetProjectorOpcodeThreadProc(void* pParam)
 {
 	CDlgProjectorConfig* pDlg = (CDlgProjectorConfig*)pParam;
-	pDlg->GetProjectorOpcode();
+    BYTE byIndex = 0;
+    if (BST_CHECKED == ((CButton*)pDlg->GetDlgItem(IDC_RADIO_CODE1))->GetCheck()) {
+        byIndex = 1;
+    }
+    else if (BST_CHECKED == ((CButton*)pDlg->GetDlgItem(IDC_RADIO_CODE2))->GetCheck()) {
+        byIndex = 2;
+    }
+
+	pDlg->GetProjectorOpcode(byIndex);
 
 	return 0;
 }
@@ -1101,6 +1126,39 @@ void CDlgProjectorConfig::OnClickedCheckHexintegerSwitch()
     OpcodeTransform(IDC_EDIT_DELAY_OPCODE);
 }
 
+void CDlgProjectorConfig::OnRadioCode1Selected()
+{
+	// TODO: Add your command handler code here
+	GetDlgItemText(IDC_EDIT_POWERON_OPCODE, m_strTempPowerOnCodes[1]);
+	GetDlgItemText(IDC_EDIT_POWEROFF_OPCODE, m_strTempPowerOffCodes[1]);
+	GetDlgItemText(IDC_EDIT_RGB_OPCODE, m_strTempPowerRGBCodes[1]);
+	GetDlgItemText(IDC_EDIT_VIDEO_OPCODE, m_strTempPowerVIDEOCodes[1]);
+	GetDlgItemText(IDC_EDIT_DELAY_OPCODE, m_strTempPowerDelayCodes[1]);
+
+	SetDlgItemText(IDC_EDIT_POWERON_OPCODE, m_strTempPowerOnCodes[0]);
+	SetDlgItemText(IDC_EDIT_POWEROFF_OPCODE, m_strTempPowerOffCodes[0]);
+	SetDlgItemText(IDC_EDIT_RGB_OPCODE, m_strTempPowerRGBCodes[0]);
+	SetDlgItemText(IDC_EDIT_VIDEO_OPCODE, m_strTempPowerVIDEOCodes[0]);
+	SetDlgItemText(IDC_EDIT_DELAY_OPCODE, m_strTempPowerDelayCodes[0]);
+}
+
+
+void CDlgProjectorConfig::OnRadioCode2Selected()
+{
+	// TODO: Add your command handler code here
+	GetDlgItemText(IDC_EDIT_POWERON_OPCODE, m_strTempPowerOnCodes[0]);
+	GetDlgItemText(IDC_EDIT_POWEROFF_OPCODE, m_strTempPowerOffCodes[0]);
+	GetDlgItemText(IDC_EDIT_RGB_OPCODE, m_strTempPowerRGBCodes[0]);
+	GetDlgItemText(IDC_EDIT_VIDEO_OPCODE, m_strTempPowerVIDEOCodes[0]);
+	GetDlgItemText(IDC_EDIT_DELAY_OPCODE, m_strTempPowerDelayCodes[0]);
+
+	SetDlgItemText(IDC_EDIT_POWERON_OPCODE, m_strTempPowerOnCodes[1]);
+	SetDlgItemText(IDC_EDIT_POWEROFF_OPCODE, m_strTempPowerOffCodes[1]);
+	SetDlgItemText(IDC_EDIT_RGB_OPCODE, m_strTempPowerRGBCodes[1]);
+	SetDlgItemText(IDC_EDIT_VIDEO_OPCODE, m_strTempPowerVIDEOCodes[1]);
+	SetDlgItemText(IDC_EDIT_DELAY_OPCODE, m_strTempPowerDelayCodes[1]);
+}
+
 void CDlgProjectorConfig::OnClickedBtnGetProjectorOpcode()
 {
     // TODO: Add your control notification handler code here
@@ -1124,7 +1182,7 @@ void CDlgProjectorConfig::OnClickedBtnGetProjectorOpcode()
 	}
 }
 
-BOOL CDlgProjectorConfig::SetProjectorOpcode()
+BOOL CDlgProjectorConfig::SetProjectorOpcode(BYTE byIndex)
 {
 	BOOL bResult = TRUE;
 	do {
@@ -1155,7 +1213,7 @@ BOOL CDlgProjectorConfig::SetProjectorOpcode()
 			BYTE byInput[BUFFER_SIZE] = { 0 }, byRequest[BUFFER_SIZE] = { 0 };
 			ULONG uLength = 0, uSize = 0;
 			String2ByteArray(strInput, byInput, uLength);
-			BuildSerialData(byFunction, byInput, uLength, byRequest, uSize);
+			BuildSerialData(byIndex, byFunction, byInput, uLength, byRequest, uSize);
 			bResult = m_pMainDlg->SendSerialData(byRequest, uSize);
             Sleep(100);
             {
@@ -1179,7 +1237,14 @@ BOOL CDlgProjectorConfig::SetProjectorOpcode()
 unsigned int WINAPI SetProjectorOpcodeThreadProc(void* pParam)
 {
 	CDlgProjectorConfig* pDlg = (CDlgProjectorConfig*)pParam;
-	pDlg->SetProjectorOpcode();
+	BYTE byCodeIndex = 0;
+	if (BST_CHECKED == ((CButton*)pDlg->GetDlgItem(IDC_RADIO_CODE1))->GetCheck()) {
+		byCodeIndex = 1;
+	}
+	else if (BST_CHECKED == ((CButton*)pDlg->GetDlgItem(IDC_RADIO_CODE2))->GetCheck()) {
+		byCodeIndex = 2;
+	}
+	pDlg->SetProjectorOpcode(byCodeIndex);
 
 	return 0;
 }

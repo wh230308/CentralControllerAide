@@ -363,7 +363,7 @@ void CDlgCtrlPreset::OnClickedBtnGetPreset()
 
 	BYTE byRequest[BUFFER_SIZE] = { 0 };
 	ULONG uSize = 0;
-	BuildSerialData(FUNCTION_RSET, NULL, 0, byRequest, uSize);
+	BuildSerialData(1, FUNCTION_RSET, NULL, 0, byRequest, uSize);
 	m_pMainDlg->SendSerialData(byRequest, uSize);
 }
 
@@ -386,7 +386,7 @@ void CDlgCtrlPreset::OnClickedBtnSetPreset()
 	BYTE byInput[] = { GetPresetCode1(), GetPresetCode2() };
 	BYTE byRequest[BUFFER_SIZE] = { 0 };
 	ULONG uSize = 0;
-	BuildSerialData(FUNCTION_WSET, byInput, sizeof(byInput), byRequest, uSize);
+	BuildSerialData(1, FUNCTION_WSET, byInput, sizeof(byInput), byRequest, uSize);
     if (m_pMainDlg->SendSerialData(byRequest, uSize)) {
         MessageBox(_T("设置预设功能码成功！"), _T("提示"), MB_ICONINFORMATION);
     }

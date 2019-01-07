@@ -40,7 +40,7 @@ void ByteArray2String(const BYTE* byHexArray, ULONG& uSize, CString& strOpcode)
 	strOpcode.TrimRight();
 }
 
-void BuildSerialData(BYTE byFunction, const BYTE* byInput, ULONG uLength, BYTE* byHexArray, ULONG& uSize)
+void BuildSerialData(BYTE byIndex, BYTE byFunction, const BYTE* byInput, ULONG uLength, BYTE* byHexArray, ULONG& uSize)
 {
 	ASSERT(byHexArray != NULL);
 	uSize = 0;
@@ -51,6 +51,8 @@ void BuildSerialData(BYTE byFunction, const BYTE* byInput, ULONG uLength, BYTE* 
 	byHexArray[uSize++] = 'w';
 	byHexArray[uSize++] = 't';
 	byHexArray[uSize++] = '#';
+	// fill index
+    byHexArray[uSize++] = byIndex;
 	// fill function
 	byHexArray[uSize++] = byFunction;
 	// fill data length

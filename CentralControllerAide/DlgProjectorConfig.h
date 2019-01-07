@@ -69,6 +69,8 @@ private:
     afx_msg void OnClickedBtnGetSerialConfig();
     afx_msg void OnClickedBtnSetSerialConfig();
     afx_msg void OnClickedCheckHexintegerSwitch();
+	afx_msg void OnRadioCode1Selected();
+	afx_msg void OnRadioCode2Selected();
     afx_msg void OnClickedBtnGetProjectorOpcode();
     afx_msg void OnClickedBtnSetProjectorOpcode();
     afx_msg void OnClickedBtnSaveProjectorConfig();
@@ -77,8 +79,8 @@ private:
 
 public:
     void OpcodeTransform(UINT uEditCtrlResId);
-	BOOL GetProjectorOpcode();
-	BOOL SetProjectorOpcode();
+	BOOL GetProjectorOpcode(BYTE byIndex);
+	BOOL SetProjectorOpcode(BYTE byIndex);
 	BOOL SaveProjectorOpcode();
 
     void OnRecvGetProjectorSerialConfig(BYTE byErr, const BYTE* bySerialConfig, ULONG uSize);
@@ -105,6 +107,12 @@ private:
     CHexIntegerEdit m_editVIDEO;
     CHexIntegerEdit m_editDelay;
     ProjectorBrandList m_brandList;
+
+	CString m_strTempPowerOnCodes[2];
+	CString m_strTempPowerOffCodes[2];
+	CString m_strTempPowerRGBCodes[2];
+	CString m_strTempPowerVIDEOCodes[2];
+	CString m_strTempPowerDelayCodes[2];
 
 	BOOL m_bIsGettingProjectorOpcode;
 	HANDLE m_hGetProjectorOpcodeThread;

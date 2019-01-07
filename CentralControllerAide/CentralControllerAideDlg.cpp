@@ -124,7 +124,6 @@ BOOL CCentralControllerAideDlg::OnInitDialog()
     GetClientRect(&mainClientRect);
     InitTabCtrl(mainClientRect);
     InitSerialCtrl(mainClientRect);
-    //TraverseSerialComm();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -386,9 +385,9 @@ void CCentralControllerAideDlg::ParseRecvSerialData(BYTE* byData, ULONG uSize)
         return;
     }
 
-    BYTE byFunction = lpRecvBuffer[5];
-    BYTE byErr = lpRecvBuffer[6];
-    BYTE byLength = lpRecvBuffer[7];
+    BYTE byFunction = lpRecvBuffer[6];
+    BYTE byErr = lpRecvBuffer[7];
+    BYTE byLength = lpRecvBuffer[8];
     if (PACKET_HEADER_SIZE + byLength <= uRecvSize) {
         // 已获取到完整包头和完整包体，但可能有多余的数据，多余部分丢弃
         BYTE* lpSerialData = new BYTE[BUFFER_SIZE];
